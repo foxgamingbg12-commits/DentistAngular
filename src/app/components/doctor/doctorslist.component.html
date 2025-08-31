@@ -1,0 +1,193 @@
+<!-- src/app/components/doctors-list/doctors-list.component.html -->
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>🩺 Doctors Network</h1>
+      <p>Manage your professional dental network</p>
+    </div>
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <div class="content">
+    <input 
+      type="text" 
+      class="search-bar" 
+      placeholder="🔍 Search doctors by name, nickname, email, or phone..."
+      [(ngModel)]="searchTerm"
+      (keyup)="searchDoctors()">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar"> 
+      <div class="stat-card">
+        <div class="stat-number">{{stats.totalDoctors}}</div>
+        <div class="stat-label">Total Doctors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{stats.activeDoctors}}</div>
+        <div class="stat-label">Active Partners</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{stats.totalPatients}}</div>
+        <div class="stat-label">Total Patients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{stats.recentWork}}</div>
+        <div class="stat-label">Recent Cases</div>
+      </div>
+    </div>
+
+    <button class="add-doctor-btn" (click)="openAddModal()">
+      ➕ Add New Doctor
+    </button>
+
+    <div class="doctors-grid" *ngIf="displayedDoctors.length > 0">
+      <div class="doctor-card" *ngFor="let doctor of displayedDoctors">
+        <div class="doctor-header">
+          <div class="doctor-avatar">
+            {{getInitials(doctor.Name)}}
+          </div>
+          <div class="doctor-info">
+            <h3>{{doctor.Name}}</h3>
+            <div class="doctor-nickname">"{{doctor.NickName}}"</div>
+          </div>
+        </div>
+        
+        <div class="doctor-details">
+          <div class="detail-row">
+            <span class="detail-icon">🏥</span>
+            <span class="detail-label">Practice:</span>
+            <span class="detail-value">{{doctor.practice}}</span>
+          </div>
+          <div class="detail-row" *ngIf="doctor.specialty">
+            <span class="detail-icon">🩺</span>
+            <span class="detail-label">Specialty:</span>
+            <span class="detail-value">{{doctor.specialty}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📧</span>
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">
+              <a [href]="'mailto:' + doctor.Email" class="contact-link">{{doctor.Email}}</a>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📞</span>
+            <span class="detail-label">Phone:</span>
+            <span class="detail-value">
+              <a [href]="'tel:' + doctor.Phone" class="contact-link">{{doctor.Phone}}</a>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📅</span>
+            <span class="detail-label">Partner Since:</span>
+            <span class="detail-value">{{formatDate(doctor.joinDate)}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">👥</span>
+            <span class="detail-label">Patients:</span>
+            <span class="detail-value">{{doctor.patients ? doctor.patients.length : 0}}</span>
+          </div>
+        </div>
+        
+        <div class="doctor-actions">
+          <button class="action-btn btn-primary" (click)="viewDoctorDetails(doctor)">
+            View Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" *ngIf="displayedDoctors.length === 0">
+      <h3>No doctors found</h3>
+      <p>Try adjusting your search criteria or add a new doctor</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add New Doctor Modal -->
+<div class="modal-overlay" [class.show]="showAddModal" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h2>➕ Add New Doctor</h2>
+        <p>Register a new dental professional to our network</p>
+      </div>
+      <button class="modal-close" (click)="closeAddModal()">✕ Close</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-success-message" *ngIf="modalSuccess">
+        {{modalMessage}}
+      </div>
+
+      <div class="modal-error-message" *ngIf="modalError">
+        {{modalMessage}}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #doctorForm="ngForm">
+        <div class="modal-form-section">
+          <h3>👨‍⚕️ Personal Information</h3>
+          
+          <div class="modal-form-group">
+            <label for="fullName">Full Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="fullName" 
+              [(ngModel)]="newDoctor.fullName"
+              name="fullName"
+              placeholder="Dr. Sarah Johnson" 
+              required>
+          </div>
+
+          <div class="modal-form-group">
+            <label for="username">Username <span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="username" 
+              [(ngModel)]="newDoctor.username"
+              name="username"
+              placeholder="dr.sarah" 
+              required>
+            <div class="modal-help-text">Unique username for login purposes</div>
+          </div>
+        </div>
+
+        <div class="modal-form-section">
+          <h3>📞 Contact Information</h3>
+          
+          <div class="modal-form-group">
+            <label for="email">Email Address <span class="required">*</span></label>
+            <input 
+              type="email" 
+              id="email" 
+              [(ngModel)]="newDoctor.email"
+              name="email"
+              placeholder="sarah.johnson@dentalclinic.com" 
+              required>
+          </div>
+
+          <div class="modal-form-group">
+            <label for="phone">Phone Number <span class="required">*</span></label>
+            <input 
+              type="tel" 
+              id="phone" 
+              [(ngModel)]="newDoctor.phone"
+              name="phone"
+              placeholder="(555) 123-4567"
+              (input)="formatPhoneNumber($event)"
+              required>
+          </div>
+        </div>
+
+        <div class="modal-form-actions">
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">
+            🔄 Reset Form
+          </button>
+          <button type="submit" class="btn btn-primary">
+            ✅ Add Doctor
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

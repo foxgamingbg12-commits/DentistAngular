@@ -1,0 +1,66 @@
+<div class="app-container">
+  <div class="home-header">
+    <div class="welcome-info">
+      <h2>Welcome, {{ userName }}!</h2>
+      <p>{{ userRole }}</p>
+      <span class="status-badge">{{ userStatus }}</span>
+    </div>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="home-content">
+    <!-- Quick Stats -->
+    <div class="stats-row">
+      <div class="stat-card" *ngFor="let stat of stats">
+        <div class="stat-number">{{ stat.number }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="action-card" (click)="startNewCase()">
+        <div style="color: #FFCB05; font-size: 60px; display: inline-block; position: relative;">
+          <svg width="60" height="60" viewBox="0 0 100 100" style="vertical-align: middle;">
+            <rect x="42" y="10" width="16" height="80" fill="#FFCB05" rx="8" ry="8"/>
+            <rect x="10" y="42" width="80" height="16" fill="#FFCB05" rx="8" ry="8"/>
+          </svg>
+        </div>
+        <h3>Start New Case</h3>
+        <p>Begin a new dental laboratory case</p>
+      </button>
+
+      <button class="action-card" (click)="openSection('calendar')">
+        <span class="icon" style="color: #FFCB05; font-size: 50px;">📅</span>
+        <h3>Calendar</h3>
+        <p>View delivery dates & deadlines</p>
+      </button>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-grid">
+      <div 
+        class="dashboard-card" 
+        *ngFor="let section of dashboardSections"
+        (click)="openSection(section.section)">
+        <span class="icon">{{ section.icon }}</span>
+        <h3>{{ section.title }}</h3>
+        <p>{{ section.description }}</p>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>Recent Activity</h3>
+        <button class="view-all-btn" (click)="viewAllActivity()">View All Activity</button>
+      </div>
+      
+      <div class="activity-item" *ngFor="let activity of recentActivities">
+        <strong>{{ activity.title }}</strong>
+        <div class="activity-time">{{ activity.time }}</div>
+        <p>{{ activity.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
