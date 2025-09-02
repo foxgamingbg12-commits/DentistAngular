@@ -14,7 +14,7 @@ export interface Doctor {
   Phone: string;
   practice: string;
   joinDate: string;
-  specialty: string;
+  specialty?: string;
   patients: Patient[];
 }
 
