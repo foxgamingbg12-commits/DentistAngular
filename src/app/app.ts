@@ -1,10 +1,10 @@
 import { Component, NgModule, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { PracticeComponent } from './components/practice/practice';
+import { DoctorsListComponent } from './components/doctor/doctorslist.component';
 import { BrowserModule } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, PracticeComponent],
+  imports: [RouterOutlet, DoctorsListComponent],
   templateUrl: './app.html',
   styleUrl: './app.css', 
 })
