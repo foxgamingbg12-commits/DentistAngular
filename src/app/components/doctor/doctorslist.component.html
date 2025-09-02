@@ -44,11 +44,11 @@
       <div class="doctor-card" *ngFor="let doctor of displayedDoctors">
         <div class="doctor-header">
           <div class="doctor-avatar">
-            {{getInitials(doctor.Name)}}
+            {{getInitials(doctor.name)}}
           </div>
           <div class="doctor-info">
-            <h3>{{doctor.Name}}</h3>
-            <div class="doctor-nickname">"{{doctor.NickName}}"</div>
+            <h3>{{doctor.name}}</h3>
+            <div class="doctor-nickname">"{{doctor.nickName}}"</div>
           </div>
         </div>
         
@@ -65,22 +65,22 @@
           </div>
           <div class="detail-row">
             <span class="detail-icon">📧</span>
-            <span class="detail-label">Email:</span>
+            <span class="detail-label">email:</span>
             <span class="detail-value">
-              <a [href]="'mailto:' + doctor.Email" class="contact-link">{{doctor.Email}}</a>
+              <a [href]="'mailto:' + doctor.email" class="contact-link">{{doctor.email}}</a>
             </span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📞</span>
             <span class="detail-label">Phone:</span>
             <span class="detail-value">
-              <a [href]="'tel:' + doctor.Phone" class="contact-link">{{doctor.Phone}}</a>
+              <a [href]="'tel:' + doctor.phone" class="contact-link">{{doctor.phone}}</a>
             </span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📅</span>
             <span class="detail-label">Partner Since:</span>
-            <span class="detail-value">{{formatDate(doctor.joinDate)}}</span>
+            <span class="detail-value">{{formatDate(doctor.startDate)}}</span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">👥</span>

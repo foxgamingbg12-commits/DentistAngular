@@ -7,17 +7,16 @@ export interface Patient {
 }
 
 export interface Doctor {
-  DoctorID: number;
-  Name: string;
-  NickName: string;
-  Email: string;
-  Phone: string;
+  doctorID: number;
+  name: string;
+  nickName: string;
+  email: string;
+  phone: string;
   practice: string;
-  joinDate: string;
+  startDate: string;
   specialty?: string;
   patients: Patient[];
 }
-
 export interface DoctorStats {
   totalDoctors: number;
   activeDoctors: number;

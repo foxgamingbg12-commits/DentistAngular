@@ -68,7 +68,7 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
               .map(word => word.charAt(0))
               .join('')
               .toUpperCase()
-              .slice(0, 2);
+              .slice(1, 3);
   }
 
   formatDate(dateString: string): string {
@@ -166,19 +166,19 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
     // Simulate API call
     setTimeout(() => {
       const doctor: Doctor = {
-        DoctorID: this.doctorService.generateDoctorId(),
-        Name: this.newDoctor.fullName,
-        NickName: this.newDoctor.username,
-        Email: this.newDoctor.email,
-        Phone: this.newDoctor.phone,
+        doctorID: this.doctorService.generateDoctorId(),
+        name: this.newDoctor.fullName,
+        nickName: this.newDoctor.username,
+        email: this.newDoctor.email,
+        phone: this.newDoctor.phone,
         practice: "To Be Assigned",
         specialty: "General Dentistry",
-        joinDate: new Date().toISOString().split('T')[0],
+        startDate: new Date().toISOString().split('T')[0],
         patients: []
       };
 
       this.doctorService.addDoctor(doctor);
-      this.showModalSuccess(`${doctor.Name} has been successfully added to the network!`);
+      this.showModalSuccess(`${doctor.name} has been successfully added to the network!`);
 
       setTimeout(() => {
         this.closeAddModal();
@@ -187,7 +187,7 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   }
 
   viewDoctorDetails(doctor: Doctor): void {
-    alert(`👨‍⚕️ Doctor Profile: ${doctor.Name}\n\nFull Details:\n• Nickname: "${doctor.NickName}"\n• Email: ${doctor.Email}\n• Phone: ${doctor.Phone}\n• Practice: ${doctor.practice}\n• Specialty: ${doctor.specialty || 'General Dentistry'}\n• Partner Since: ${this.formatDate(doctor.joinDate)}\n• Total Patients: ${doctor.patients ? doctor.patients.length : 0}`);
+    alert(`👨‍⚕️ Doctor Profile: ${doctor.name}\n\nFull Details:\n• Nickname: "${doctor.nickName}"\n• Email: ${doctor.email}\n• Phone: ${doctor.phone}\n• Practice: ${doctor.practice}\n• Specialty: ${doctor.specialty || 'General Dentistry'}\n• Partner Since: ${this.formatDate(doctor.startDate)}\n• Total Patients: ${doctor.patients ? doctor.patients.length : 0}`);
   }
 
   goBack(): void {
