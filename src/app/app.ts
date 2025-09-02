@@ -12,7 +12,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 export class App {
   protected readonly title = signal('my-angular-app');
-
 }
 
 
