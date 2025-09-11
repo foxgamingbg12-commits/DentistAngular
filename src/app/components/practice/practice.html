@@ -1,1 +1,242 @@
-<p>practice works!</p>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>🏥 Practices Network</h1>
+      <p>Manage your dental practice partners</p>
+    </div>
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <div class="content">
+    <input 
+      type="text" 
+      class="search-bar" 
+      placeholder="🔍 Search practices by name, company, email, or location..." 
+      [(ngModel)]="searchTerm"
+      (input)="onSearch()">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.totalPractices }}</div>
+        <div class="stat-label">Total Practices</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.activePractices }}</div>
+        <div class="stat-label">Active Partners</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.totalDoctors }}</div>
+        <div class="stat-label">Total Doctors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.recentWork }}</div>
+        <div class="stat-label">Recent Cases</div>
+      </div>
+    </div>
+
+    <button class="add-practice-btn" (click)="openModal()">
+      ➕ Add New Practice
+    </button>
+
+    <div class="practices-grid" *ngIf="displayedPractices.length > 0">
+      <div class="practice-card" *ngFor="let practice of displayedPractices">
+        <div class="practice-header">
+          <div class="practice-avatar">
+            {{ getInitials(practice.Name) }}
+          </div>
+          <div class="practice-info">
+            <h3>{{ practice.Name }}</h3>
+            <div class="practice-company">{{ practice.CompanyName }}</div>
+            <div class="status-badge status-active">{{ practice.Status }}</div>
+          </div>
+        </div>
+        
+        <div class="practice-details">
+          <div class="detail-row">
+            <span class="detail-icon">📍</span>
+            <span class="detail-label">Address:</span>
+            <span class="detail-value">{{ practice.Address }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📧</span>
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">
+              <a [href]="'mailto:' + practice.Email" class="contact-link">{{ practice.Email || 'Not provided' }}</a>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📞</span>
+            <span class="detail-label">Phone:</span>
+            <span class="detail-value">
+              <a [href]="'tel:' + practice.Phone" class="contact-link">{{ practice.Phone }}</a>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📅</span>
+            <span class="detail-label">Partner Since:</span>
+            <span class="detail-value">{{ formatDate(practice.PartnerSince) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">👨‍⚕️</span>
+            <span class="detail-label">Doctors:</span>
+            <span class="detail-value">{{ practice.Doctors }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-icon">📊</span>
+            <span class="detail-label">Recent Cases:</span>
+            <span class="detail-value">{{ practice.RecentCases }}</span>
+          </div>
+        </div>
+        
+        <div class="practice-actions">
+          <button class="action-btn btn-primary" (click)="viewPracticeDetails(practice)">
+            View Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" *ngIf="displayedPractices.length === 0">
+      <h3>No practices found</h3>
+      <p>Try adjusting your search criteria or add a new practice</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add New Practice Modal -->
+<div class="modal-overlay" [class.show]="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h2>➕ Add New Practice</h2>
+        <p>Register a new dental practice to our network</p>
+      </div>
+      <button class="modal-close" (click)="closeModal()">✕ Close</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-success-message" *ngIf="showSuccessMessage">
+        {{ modalSuccessMessage }}
+      </div>
+
+      <div class="modal-error-message" *ngIf="showErrorMessage">
+        {{ modalErrorMessage }}
+      </div>
+
+      <form [formGroup]="newPracticeForm" (ngSubmit)="onSubmit()">
+        <div class="modal-form-section">
+          <h3>
+            <svg class="practice-icon" viewBox="0 0 24 24" fill="#197CAE">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Practice Information
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Practice Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                formControlName="name"
+                placeholder="Enter practice name" 
+                class="form-input">
+              <div class="input-hint">Required field - Maximum 1024 characters</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Company Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                formControlName="companyName"
+                placeholder="Enter company name" 
+                class="form-input">
+              <div class="input-hint">Legal company name</div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Address <span class="required">*</span></label>
+              <input 
+                type="text" 
+                formControlName="address"
+                placeholder="Enter complete practice address" 
+                class="form-input">
+              <div class="input-hint">Complete address including street, city, state, zip</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Phone Number <span class="required">*</span></label>
+              <input 
+                type="tel" 
+                formControlName="phone"
+                placeholder="(555) 123-4567" 
+                (input)="onPhoneInput($event)"
+                class="form-input">
+              <div class="input-hint">Primary practice contact number</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input 
+                type="email" 
+                formControlName="email"
+                placeholder="practice@example.com" 
+                class="form-input">
+              <div class="input-hint">Practice email for communication</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tax ID</label>
+              <input 
+                type="text" 
+                formControlName="taxId"
+                placeholder="Enter tax identification number" 
+                class="form-input">
+              <div class="input-hint">Federal Tax ID or EIN</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-form-section">
+          <h3>
+            <svg class="practice-icon" viewBox="0 0 24 24" fill="#197CAE">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            Operations & Services
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Opening Hours</label>
+              <input 
+                type="text" 
+                formControlName="openingHours"
+                placeholder="e.g., Mon-Fri: 8:00 AM - 6:00 PM, Sat: 9:00 AM - 2:00 PM" 
+                class="form-input">
+              <div class="input-hint">Practice operating hours and days</div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Delivery Method</label>
+              <input 
+                type="text" 
+                formControlName="deliveryMethod"
+                placeholder="e.g., Pickup only, Courier service, Mail delivery, etc." 
+                class="form-input">
+              <div class="input-hint">How lab work will be delivered to/from practice (Maximum 200 characters)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-form-actions">
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">
+            🔄 Reset Form
+          </button>
+          <button type="submit" class="btn btn-primary">
+            ✅ Register Practice
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
