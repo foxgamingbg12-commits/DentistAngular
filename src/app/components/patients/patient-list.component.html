@@ -1,0 +1,262 @@
+<div class="app-container">
+  <div class="header">
+    <div class="header-info">
+      <h1>Patient Management</h1>
+      <p>Manage all patients across dental practices</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openAddPatientModal()">+ New Patient</button>
+      <a href="#" class="btn btn-secondary" (click)="goHome()">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Statistics Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number">{{ statistics.totalPatients }}</div>
+        <div class="stat-label">Total Patients</div>
+      </div>
+    </div>
+
+    <!-- Page Controls -->
+    <div class="page-controls">
+      <div class="search-filters">
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="Search patients..." 
+            (keyup)="onSearchChange($event)"
+            [value]="searchTerm">
+        </div>
+        <select class="filter-select" (change)="onDoctorFilterChange($event)" [value]="selectedDoctor">
+          <option value="">All Doctors</option>
+          <option *ngFor="let doctor of doctors" [value]="doctor">{{ doctor }}</option>
+        </select>
+        <select class="filter-select" (change)="onPracticeFilterChange($event)" [value]="selectedPractice">
+          <option value="">All Practices</option>
+          <option *ngFor="let practice of practices" [value]="practice">{{ getShortPracticeName(practice) }}</option>
+        </select>
+        <select class="filter-select" (change)="onStatusFilterChange($event)" [value]="selectedStatus">
+          <option value="">All Statuses</option>
+          <option value="urgent">Urgent Cases</option>
+          <option value="in-progress">Active Cases</option>
+          <option value="completed">Recent Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Patients Grid -->
+    <div class="patients-grid" *ngIf="displayedPatients.length > 0">
+      <div 
+        class="patient-card" 
+        *ngFor="let patient of displayedPatients" 
+        (click)="viewPatientDetails(patient.patientID)">
+        
+        <div class="patient-header">
+          <div class="patient-avatar">{{ getInitials(patient.name) }}</div>
+          <div class="patient-info">
+            <h3>{{ patient.name }}</h3>
+            <div class="patient-BirthDate">Date of birth: {{ patient.birthDate }}</div>
+          </div>
+        </div>
+        
+        <div class="patient-details">
+          <div class="detail-item">
+            <div class="detail-label">Phone</div>
+            <div class="detail-value">{{ patient.phone }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Total Cases</div>
+            <div class="detail-value">{{ patient.cases.length }}</div>
+          </div>
+        </div>
+        
+        <div class="cases-summary">
+          <h4>Recent Cases</h4>
+          <div class="case-item" *ngFor="let case of patient.cases.slice(0, 3)">
+            <span class="case-type">{{ case.type }} ({{ case.tooth }})</span>
+            <span class="case-status" [ngClass]="getStatusClass(case.status)">
+              {{ case.status.replace('-', ' ').toUpperCase() }}
+            </span>
+          </div>
+          <div 
+            *ngIf="patient.cases.length > 3" 
+            style="font-size: 12px; color: #666; margin-top: 8px;">
+            +{{ patient.cases.length - 3 }} more cases
+          </div>
+        </div>
+        
+        <div class="patient-actions">
+          <button 
+            class="btn btn-primary btn-small" 
+            (click)="viewPatientProfile($event, patient.patientID)">
+            View Profile
+          </button>
+          <button 
+            class="btn btn-secondary btn-small" 
+            (click)="addNewCase($event, patient.patientID)">
+            New Case
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" *ngIf="displayedPatients.length === 0">
+      <h3>No patients found</h3>
+      <p>Try adjusting your search criteria</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Patient Modal -->
+<div class="modal-overlay" *ngIf="showAddPatientModal" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h2>➕ Add New Patient</h2>
+        <p>Create a new patient profile with complete information</p>
+      </div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-content">
+      <div *ngIf="showSuccessAlert" class="alert alert-success">
+        New patient profile created successfully!
+      </div>
+
+      <div *ngIf="showInfoAlert" class="alert alert-info">
+        💡 Fill in the patient information below. Only first and last name are required fields.
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+
+      <form [formGroup]="newPatientForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Basic Information -->
+          <div class="form-card">
+            <h3>👤 Basic Information</h3>
+            
+            <div class="form-group">
+              <label class="form-label" for="firstName">First Name <span class="required-indicator">*</span></label>
+              <input 
+                type="text" 
+                class="form-input" 
+                id="firstName" 
+                placeholder="Enter first name" 
+                formControlName="firstName">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="lastName">Last Name <span class="required-indicator">*</span></label>
+              <input 
+                type="text" 
+                class="form-input" 
+                id="lastName" 
+                placeholder="Enter last name" 
+                formControlName="lastName">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="dateOfBirth">Date of Birth</label>
+              <input 
+                type="date" 
+                class="form-input" 
+                id="dateOfBirth" 
+                formControlName="dateOfBirth">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gender">Gender</label>
+              <select class="form-input form-select" id="gender" formControlName="gender">
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="toothShade">Natural Tooth Shade</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                id="toothShade" 
+                placeholder="e.g., A1, A2, B1, C2" 
+                maxlength="10"
+                formControlName="toothShade">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="insurance">Health Insurance Number</label>
+              <textarea 
+                class="form-input form-textarea" 
+                id="insurance" 
+                placeholder="Enter health insurance number" 
+                maxlength="20"
+                formControlName="insurance"></textarea>
+              <div class="field-counter" [style.color]="getCharacterCountColor('insurance')">
+                {{ getCharacterCount('insurance') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="form-card">
+            <h3>📞 Contact Information</h3>
+            
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number</label>
+              <input 
+                type="tel" 
+                class="form-input" 
+                id="phone" 
+                placeholder="(555) 123-4567"
+                formControlName="phone"
+                (input)="formatPhoneNumber($event)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input 
+                type="email" 
+                class="form-input" 
+                id="email" 
+                placeholder="patient@email.com"
+                formControlName="email">
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-card">
+            <h3>📝 Notes</h3>
+            
+            <div class="form-group">
+              <label class="form-label" for="notes">Patient Notes</label>
+              <textarea 
+                class="form-input form-textarea" 
+                id="notes" 
+                placeholder="Enter any relevant notes, observations, preferences, or special instructions for this patient" 
+                rows="4" 
+                maxlength="2048"
+                formControlName="notes"></textarea>
+              <div class="field-counter" [style.color]="getCharacterCountColor('notes')">
+                {{ getCharacterCount('notes') }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="form-btn form-btn-secondary" (click)="resetForm()">Clear Form</button>
+          <button type="submit" class="form-btn form-btn-primary" [disabled]="!newPatientForm.valid">
+            ➕ Create Patient
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

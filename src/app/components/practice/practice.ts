@@ -5,9 +5,10 @@ import { Practice, PracticeStats } from '../../interfaces/practice.interface';
 import { PracticeService } from '../../services/practice.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-practices-list',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: 'practice.html',
   styleUrls: ['practice.css']
 })
@@ -16,7 +17,6 @@ export class PracticesListComponent implements OnInit, OnDestroy {
   displayedPractices: Practice[] = [];
   stats: PracticeStats = {
     totalPractices: 0,
-    activePractices: 0,
     totalDoctors: 0,
     recentWork: 0
   };
@@ -34,7 +34,8 @@ export class PracticesListComponent implements OnInit, OnDestroy {
 
   constructor(
     private practiceService: PracticeService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.newPracticeForm = this.createForm();
   }
@@ -55,7 +56,7 @@ export class PracticesListComponent implements OnInit, OnDestroy {
     return this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(1024)]],
       companyName: ['', [Validators.required, Validators.maxLength(1024)]],
-      address: ['', [Validators.required, Validators.maxLength(200)]],
+      adress: ['', [Validators.required, Validators.maxLength(200)]],
       phone: ['', [Validators.required, Validators.maxLength(100)]],
       email: ['', [Validators.maxLength(1024)]],
       taxId: ['', [Validators.maxLength(1024)]],
@@ -64,16 +65,17 @@ export class PracticesListComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadPractices(): void {
+loadPractices(): void {
     this.practiceService.getPractices()
       .pipe(takeUntil(this.destroy$))
       .subscribe(practices => {
         this.practices = practices;
         this.displayedPractices = [...practices];
+        this.updateStats();
       });
   }
 
-  private updateStats(): void {
+   updateStats(): void {
     this.stats = this.practiceService.getStats();
   }
 
@@ -177,22 +179,23 @@ export class PracticesListComponent implements OnInit, OnDestroy {
   }
 
   viewPracticeDetails(practice: Practice): void {
-    const details = `🏥 Practice Profile: ${practice.Name}\n\n` +
+    const details = `🏥 Practice Profile: ${practice.name}\n\n` +
                    `Full Details:\n` +
-                   `• Company: ${practice.CompanyName}\n` +
-                   `• Email: ${practice.Email || 'Not provided'}\n` +
-                   `• Phone: ${practice.Phone}\n` +
-                   `• Address: ${practice.Address}\n` +
-                   `• Tax ID: ${practice.TaxID || 'Not provided'}\n` +
-                   `• Partner Since: ${this.practiceService.formatDate(practice.PartnerSince)}\n` +
-                   `• Total Doctors: ${practice.Doctors}\n` +
-                   `• Recent Cases: ${practice.RecentCases}`;
+                   `• Company: ${practice.companyName}\n` +
+                   `• Email: ${practice.email || 'Not provided'}\n` +
+                   `• Phone: ${practice.phone}\n` +
+                   `• Address: ${practice.adress}\n` +
+                   `• Tax ID: ${practice.taxID || 'Not provided'}\n` +
+                   `• Partner Since: ${this.practiceService.formatDate(practice.partnerSince)}\n` +
+                   `• Total Doctors: ${practice.doctorCount}\n` +
+                   `• Recent Cases: ${practice.caseCount}`;
     
     alert(details);
   }
 
   goBack(): void {
-    alert('🏠 Returning to main dashboard...');
+    //alert('🏠 Returning to main dashboard...');
+    this.router.navigate(['/home']);
   }
 
   getInitials(name: string): string {

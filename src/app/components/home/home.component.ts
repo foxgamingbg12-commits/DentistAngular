@@ -1,5 +1,6 @@
 import { Component, OnInit, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -61,7 +62,7 @@ export class HomeComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.animateStatNumbers();
@@ -83,11 +84,14 @@ export class HomeComponent implements OnInit {
     };
 
     if (section === 'doctors') {
-      alert(`🩺 Doctors Network\n\nDoctors you currently work with:\n\n• Dr. Sarah Johnson - General Dentistry\n  📍 Downtown Dental Clinic\n  📊 45 orders this month\n\n• Dr. Michael Martinez - Prosthodontics\n  📍 Elite Smile Center\n  📊 28 orders this month\n\n• Dr. Lisa Williams - Orthodontics\n  📍 Perfect Teeth Practice\n  📊 33 orders this month\n\n• Dr. David Chen - Oral Surgery\n  📍 Advanced Dental Care\n  📊 12 orders this month`);
+      // alert(`🩺 Doctors Network\n\nDoctors you currently work with:\n\n• Dr. Sarah Johnson - General Dentistry\n  📍 Downtown Dental Clinic\n  📊 45 orders this month\n\n• Dr. Michael Martinez - Prosthodontics\n  📍 Elite Smile Center\n  📊 28 orders this month\n\n• Dr. Lisa Williams - Orthodontics\n  📍 Perfect Teeth Practice\n  📊 33 orders this month\n\n• Dr. David Chen - Oral Surgery\n  📍 Advanced Dental Care\n  📊 12 orders this month`);
+      this.router.navigate(['/doctor']);  
     } else if (section === 'patients') {
-      alert(`👤 Patient Case Information\n\nRecent patient cases you're working on:\n\n• Patient: Maria Rodriguez\n  🦷 Case: Crown restoration (#14)\n  👨‍⚕️ Doctor: Dr. Johnson\n  📅 Due: Tomorrow\n\n• Patient: James Thompson\n  🦷 Case: Bridge (3-unit)\n  👨‍⚕️ Doctor: Dr. Martinez\n  📅 Due: Friday\n\n• Patient: Sarah Kim\n  🦷 Case: Orthodontic retainer\n  👨‍⚕️ Doctor: Dr. Williams\n  📅 Due: Next Monday\n\n• Patient: Robert Davis\n  🦷 Case: Partial denture\n  👨‍⚕️ Doctor: Dr. Chen\n  📅 Due: Next week`);
+      this.router.navigate(['/patients']);
+      //alert(`👤 Patient Case Information\n\nRecent patient cases you're working on:\n\n• Patient: Maria Rodriguez\n  🦷 Case: Crown restoration (#14)\n  👨‍⚕️ Doctor: Dr. Johnson\n  📅 Due: Tomorrow\n\n• Patient: James Thompson\n  🦷 Case: Bridge (3-unit)\n  👨‍⚕️ Doctor: Dr. Martinez\n  📅 Due: Friday\n\n• Patient: Sarah Kim\n  🦷 Case: Orthodontic retainer\n  👨‍⚕️ Doctor: Dr. Williams\n  📅 Due: Next Monday\n\n• Patient: Robert Davis\n  🦷 Case: Partial denture\n  👨‍⚕️ Doctor: Dr. Chen\n  📅 Due: Next week`);
     } else if (section === 'practices') {
-      alert(`🏥 Dental Practices Network\n\nPractices you partner with:\n\n• Downtown Dental Clinic\n  👥 3 dentists, 45 cases/month\n  📍 123 Main St, Downtown\n  📞 (555) 123-4567\n\n• Elite Smile Center\n  👥 5 dentists, 62 cases/month\n  📍 456 Oak Avenue, Midtown\n  📞 (555) 234-5678\n\n• Perfect Teeth Practice\n  👥 2 dentists, 33 cases/month\n  📍 789 Pine Street, Uptown\n  📞 (555) 345-6789\n\n• Advanced Dental Care\n  👥 4 dentists, 28 cases/month\n  📍 321 Elm Road, Westside\n  📞 (555) 456-7890`);
+      // alert(`🏥 Dental Practices Network\n\nPractices you partner with:\n\n• Downtown Dental Clinic\n  👥 3 dentists, 45 cases/month\n  📍 123 Main St, Downtown\n  📞 (555) 123-4567\n\n• Elite Smile Center\n  👥 5 dentists, 62 cases/month\n  📍 456 Oak Avenue, Midtown\n  📞 (555) 234-5678\n\n• Perfect Teeth Practice\n  👥 2 dentists, 33 cases/month\n  📍 789 Pine Street, Uptown\n  📞 (555) 345-6789\n\n• Advanced Dental Care\n  👥 4 dentists, 28 cases/month\n  📍 321 Elm Road, Westside\n  📞 (555) 456-7890`);
+      this.router.navigate(['/practice']);  
     } else if (section === 'calendar') {
       alert(`📅 Calendar & Delivery Schedule\n\nUpcoming deadlines:\n\n• Today:\n  🦷 Crown restoration (Maria Rodriguez)\n  🦷 Bridge final fitting (James Thompson)\n\n• Tomorrow:\n  🦷 Orthodontic retainer delivery\n  🦷 Denture adjustment appointment\n\n• This Week:\n  📅 3 crown deliveries\n  📅 2 bridge fittings\n  📅 1 denture consultation\n\n• Next Week:\n  📅 5 new case consultations\n  📅 4 delivery appointments\n  📅 2 follow-up fittings`);
     } else if (section === 'cases') {

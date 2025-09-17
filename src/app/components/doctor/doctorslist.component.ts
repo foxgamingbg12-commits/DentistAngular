@@ -5,12 +5,13 @@ import { Doctor, DoctorStats } from '../../interfaces/doctor.interface';
 import { DoctorService } from '../../services/doctor.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-doctors-list',
   imports: [CommonModule, FormsModule],
   templateUrl: './doctorslist.component.html',
-  styleUrls: ['./doctorslist.component.css']
+  styleUrls: ['./doctorslist.component.css'],
 })
 export class DoctorsListComponent implements OnInit, OnDestroy {
   doctors: Doctor[] = [];
@@ -18,15 +19,15 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   stats: DoctorStats = { totalDoctors: 0, activeDoctors: 0, totalPatients: 0, recentWork: 0 };
   searchTerm: string = '';
   showAddModal: boolean = false;
-  
+
   // Form data
   newDoctor = {
     fullName: '',
     username: '',
     email: '',
-    phone: ''
+    phone: '',
   };
-  
+
   // Modal state
   modalSuccess: boolean = false;
   modalError: boolean = false;
@@ -34,7 +35,7 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private doctorService: DoctorService) {}
+  constructor(private doctorService: DoctorService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadDoctors();
@@ -46,9 +47,10 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   }
 
   loadDoctors(): void {
-    this.doctorService.getDoctors()
+    this.doctorService
+      .getDoctors()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(doctors => {
+      .subscribe((doctors) => {
         this.doctors = doctors;
         this.displayedDoctors = [...doctors];
         this.updateStats();
@@ -60,22 +62,25 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   }
 
   searchDoctors(): void {
+    console.log('this.searchTerm');
+    console.log(this.searchTerm);
     this.displayedDoctors = this.doctorService.searchDoctors(this.searchTerm);
   }
 
   getInitials(name: string): string {
-    return name.split(' ')
-              .map(word => word.charAt(0))
-              .join('')
-              .toUpperCase()
-              .slice(1, 3);
+    return name
+      .split(' ')
+      .map((word) => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(1, 3);
   }
 
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 
@@ -95,8 +100,10 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   }
 
   closeAddModal(): void {
-    if (this.hasFormData() && 
-        !confirm('Are you sure you want to close? Any unsaved changes will be lost.')) {
+    if (
+      this.hasFormData() &&
+      !confirm('Are you sure you want to close? Any unsaved changes will be lost.')
+    ) {
       return;
     }
     this.showAddModal = false;
@@ -104,10 +111,12 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
   }
 
   hasFormData(): boolean {
-    return !!(this.newDoctor.fullName.trim() || 
-             this.newDoctor.username.trim() || 
-             this.newDoctor.email.trim() || 
-             this.newDoctor.phone.trim());
+    return !!(
+      this.newDoctor.fullName.trim() ||
+      this.newDoctor.username.trim() ||
+      this.newDoctor.email.trim() ||
+      this.newDoctor.phone.trim()
+    );
   }
 
   resetForm(): void {
@@ -115,7 +124,7 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
       fullName: '',
       username: '',
       email: '',
-      phone: ''
+      phone: '',
     };
     this.hideModalMessages();
   }
@@ -140,11 +149,18 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     // Basic validation
+    console.log('Submitting new doctor:', this.newDoctor);
     const requiredFields = ['fullName', 'username', 'email', 'phone'];
-    const missingField = requiredFields.find(field => !this.newDoctor[field as keyof typeof this.newDoctor]?.trim());
-    
+    const missingField = requiredFields.find(
+      (field) => !this.newDoctor[field as keyof typeof this.newDoctor]?.trim()
+    );
+
     if (missingField) {
-      this.showModalError(`Please fill in the required field: ${missingField.replace(/([A-Z])/g, ' $1').toLowerCase()}.`);
+      this.showModalError(
+        `Please fill in the required field: ${missingField
+          .replace(/([A-Z])/g, ' $1')
+          .toLowerCase()}.`
+      );
       return;
     }
 
@@ -157,40 +173,52 @@ export class DoctorsListComponent implements OnInit, OnDestroy {
 
     // Username validation
     if (!/^[a-zA-Z0-9._-]+$/.test(this.newDoctor.username)) {
-      this.showModalError('Username can only contain letters, numbers, dots, hyphens, and underscores.');
+      this.showModalError(
+        'Username can only contain letters, numbers, dots, hyphens, and underscores.'
+      );
       return;
     }
+    const doctor: Doctor = {
+      doctorID: -1,
+      name: this.newDoctor.fullName,
+      nickName: this.newDoctor.username,
+      email: this.newDoctor.email,
+      phone: this.newDoctor.phone,
+      practice: 'To Be Assigned',
+      specialty: 'General Dentistry',
+      startDate: new Date().toISOString().split('T')[0],
+      patients: [],
+    };
 
-    this.showModalSuccess('Creating doctor profile...');
-
-    // Simulate API call
-    setTimeout(() => {
-      const doctor: Doctor = {
-        doctorID: this.doctorService.generateDoctorId(),
-        name: this.newDoctor.fullName,
-        nickName: this.newDoctor.username,
-        email: this.newDoctor.email,
-        phone: this.newDoctor.phone,
-        practice: "To Be Assigned",
-        specialty: "General Dentistry",
-        startDate: new Date().toISOString().split('T')[0],
-        patients: []
-      };
-
-      this.doctorService.addDoctor(doctor);
-      this.showModalSuccess(`${doctor.name} has been successfully added to the network!`);
-
-      setTimeout(() => {
+    this.doctorService.addDoctor(doctor).subscribe({
+      next: (data) => {
+        this.doctorService.doctorsSubject.next([...this.doctorService.doctorsSubject.value, data]);
+        this.resetForm();
         this.closeAddModal();
-      }, 2000);
-    }, 1500);
+        },
+      error: (err) => {
+        console.log(err);
+        this.showModalError(err.error.value);
+      },
+    });
   }
 
   viewDoctorDetails(doctor: Doctor): void {
-    alert(`👨‍⚕️ Doctor Profile: ${doctor.name}\n\nFull Details:\n• Nickname: "${doctor.nickName}"\n• Email: ${doctor.email}\n• Phone: ${doctor.phone}\n• Practice: ${doctor.practice}\n• Specialty: ${doctor.specialty || 'General Dentistry'}\n• Partner Since: ${this.formatDate(doctor.startDate)}\n• Total Patients: ${doctor.patients ? doctor.patients.length : 0}`);
+    alert(
+      `👨‍⚕️ Doctor Profile: ${doctor.name}\n\nFull Details:\n• Nickname: "${
+        doctor.nickName
+      }"\n• Email: ${doctor.email}\n• Phone: ${doctor.phone}\n• Practice: ${
+        doctor.practice
+      }\n• Specialty: ${
+        doctor.specialty || 'General Dentistry'
+      }\n• Partner Since: ${this.formatDate(doctor.startDate)}\n• Total Patients: ${
+        doctor.patients ? doctor.patients.length : 0
+      }`
+    );
   }
 
   goBack(): void {
-    alert('🏠 Returning to main dashboard...');
+    //alert('🏠 Returning to main dashboard...');
+    this.router.navigate(['/home']);
   }
 }

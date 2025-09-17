@@ -22,10 +22,6 @@
         <div class="stat-label">Total Practices</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">{{ stats.activePractices }}</div>
-        <div class="stat-label">Active Partners</div>
-      </div>
-      <div class="stat-card">
         <div class="stat-number">{{ stats.totalDoctors }}</div>
         <div class="stat-label">Total Doctors</div>
       </div>
@@ -43,12 +39,12 @@
       <div class="practice-card" *ngFor="let practice of displayedPractices">
         <div class="practice-header">
           <div class="practice-avatar">
-            {{ getInitials(practice.Name) }}
+            {{ getInitials(practice.name) }}
           </div>
           <div class="practice-info">
-            <h3>{{ practice.Name }}</h3>
-            <div class="practice-company">{{ practice.CompanyName }}</div>
-            <div class="status-badge status-active">{{ practice.Status }}</div>
+            <h3>{{ practice.name }}</h3>
+            <div class="practice-company">{{ practice.companyName }}</div>
+            <div class="status-badge status-active">{{ practice.status }}</div>
           </div>
         </div>
         
@@ -56,36 +52,36 @@
           <div class="detail-row">
             <span class="detail-icon">📍</span>
             <span class="detail-label">Address:</span>
-            <span class="detail-value">{{ practice.Address }}</span>
+            <span class="detail-value">{{ practice.adress }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📧</span>
             <span class="detail-label">Email:</span>
             <span class="detail-value">
-              <a [href]="'mailto:' + practice.Email" class="contact-link">{{ practice.Email || 'Not provided' }}</a>
+              <a [href]="'mailto:' + practice.email" class="contact-link">{{ practice.email || 'Not provided' }}</a>
             </span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📞</span>
             <span class="detail-label">Phone:</span>
             <span class="detail-value">
-              <a [href]="'tel:' + practice.Phone" class="contact-link">{{ practice.Phone }}</a>
+              <a [href]="'tel:' + practice.phone" class="contact-link">{{ practice.phone }}</a>
             </span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📅</span>
             <span class="detail-label">Partner Since:</span>
-            <span class="detail-value">{{ formatDate(practice.PartnerSince) }}</span>
+            <span class="detail-value">{{ formatDate(practice.partnerSince) }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">👨‍⚕️</span>
             <span class="detail-label">Doctors:</span>
-            <span class="detail-value">{{ practice.Doctors }}</span>
+            <span class="detail-value">{{ practice.doctorCount }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-icon">📊</span>
             <span class="detail-label">Recent Cases:</span>
-            <span class="detail-value">{{ practice.RecentCases }}</span>
+            <span class="detail-value">{{ practice.caseCount }}</span>
           </div>
         </div>
         
