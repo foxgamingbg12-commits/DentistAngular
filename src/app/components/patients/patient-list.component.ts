@@ -121,12 +121,12 @@ import { Router } from '@angular/router';
         patient.name.toLowerCase().includes(this.searchTerm) ||
         patient.phone?.includes(this.searchTerm) ||
         patient.email?.toLowerCase().includes(this.searchTerm) ||
-        patient.cases.some(case_ =>
+        patient.cases?.some(case_ =>
           case_.type.toLowerCase().includes(this.searchTerm) ||
           case_.status.toLowerCase().includes(this.searchTerm)
         );
 
-      const matchesStatus = !this.selectedStatus || patient.cases.some(case_ => case_.status === this.selectedStatus);
+      const matchesStatus = !this.selectedStatus || patient.cases?.some(case_ => case_.status === this.selectedStatus);
 
       return matchesSearch && matchesStatus;
     });
@@ -165,7 +165,7 @@ import { Router } from '@angular/router';
   viewPatientDetails(patientId: number): void {
     const patient = this.patients.find(p => p.patientID === patientId);
     if (patient) {
-      const casesList = patient.cases.map(case_ =>
+      const casesList = patient.cases?.map(case_ =>
         `• ${case_.type} (${case_.tooth}) - ${case_.status.toUpperCase()} - Due: ${this.formatDate(case_.date)}`
       ).join('\n');
 

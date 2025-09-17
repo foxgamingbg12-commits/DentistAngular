@@ -13,7 +13,7 @@ export interface Patient {
   email?: string;
   shadeID?:number;
   healthInsuranceNumber?: string;
-  cases: Case[];
+  cases: Case[] | null | undefined;
 }
 
 export interface NewPatient 
